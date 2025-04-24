@@ -5,31 +5,20 @@ import { ActoresService } from '../actores.service';
 import { Router } from '@angular/router';
 import { extraerErrores } from '../../compartidos/funciones/extraerErrores';
 import { MostrarErroresComponent } from "../../compartidos/componentes/mostrar-errores/mostrar-errores.component";
+import { SERVICIO_CRUD_TOKEN } from '../../compartidos/provedores/provedores';
+import { CrearEntidadComponent } from "../../compartidos/componentes/crear-entidad/crear-entidad.component";
 
 @Component({
   selector: 'app-crear-actor',
-  imports: [FormularioActoresComponent, MostrarErroresComponent],
+  imports: [ CrearEntidadComponent],
   templateUrl: './crear-actor.component.html',
-  styleUrl: './crear-actor.component.css'
+  styleUrl: './crear-actor.component.css',
+  providers: [
+    {provide: SERVICIO_CRUD_TOKEN, useClass: ActoresService}
+  ]
 })
 export class CrearActorComponent {
 
-actoresService = inject(ActoresService);
-router = inject(Router);
-errores: string[] = [];
-
-GuardarCambios( actor: ActorCreacionDTO){
-
-  this.actoresService.crear(actor).subscribe({
-    next: () =>{
-      this.router.navigate(['/actores'])
-    },
-    error: err => {
-      const errores = extraerErrores(err);
-      this.errores = errores;
-    }
-  })
-
-}
+formularioActores =FormularioActoresComponent;
 
 }

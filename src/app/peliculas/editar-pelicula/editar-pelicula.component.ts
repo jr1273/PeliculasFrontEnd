@@ -1,52 +1,71 @@
-import { Component, Input, numberAttribute } from '@angular/core';
-import { PeliculaDTO, PeliculaCreacionDTO } from '../peliculas';
+import { Component, OnInit, Input, numberAttribute, inject } from "@angular/core";
+import { Router } from "@angular/router";
+import { actorAutoCompleteDTO } from "../../actores/actores";
+import { CargandoComponent } from "../../compartidos/componentes/cargando/cargando.component";
+import { MostrarErroresComponent } from "../../compartidos/componentes/mostrar-errores/mostrar-errores.component";
+import { SelectorMultipleDTO } from "../../compartidos/componentes/selector-multiple/selectorMultipleModelo";
+import { extraerErrores } from "../../compartidos/funciones/extraerErrores";
+import { PeliculaDTO, PeliculaCreacionDTO } from "../peliculas";
+import { PeliculasService } from "../peliculas.service";
 import { FormularioPeliculasComponent } from "../formulario-peliculas/formulario-peliculas.component";
-import { SelectorMultipleDTO } from '../../compartidos/componentes/selector-multiple/selectorMultipleModelo';
-import { actorAutocompleteDTO } from '../../actores/actores';
+
+
 
 @Component({
   selector: 'app-editar-pelicula',
-  imports: [FormularioPeliculasComponent],
+  imports: [MostrarErroresComponent, CargandoComponent, FormularioPeliculasComponent],
   templateUrl: './editar-pelicula.component.html',
   styleUrl: './editar-pelicula.component.css'
 })
-export class EditarPeliculaComponent {
-  @Input({transform: numberAttribute})
-id!: number;
+export class EditarPeliculaComponent  implements OnInit{
 
-pelicula: PeliculaDTO = { id : 1  , titulo: 'spider-Man', trailer: 'ABC',fechaLanzamiento : new Date ('2010-07-25') , poster:'https://upload.wikimedia.org/wikipedia/en/f/f7/Inside_Out_2_poster.jpg?20240514232832'}
+  ngOnInit(): void {
+    this.peliculasService.actualizarGet(this.id).subscribe(modelo => {
+      this.pelicula = modelo.pelicula;
+      this.actoresSeleccionados = modelo.actores;
+      this.cinesNoSeleccionados = modelo.cinesNoSeleccionados.map(cine => {
+        return <SelectorMultipleDTO>{llave: cine.id, valor: cine.nombre};
+      });
 
+      this.cinesSeleccionados = modelo.cinesSeleccionados.map(cine => {
+        return <SelectorMultipleDTO>{llave: cine.id, valor: cine.nombre};
+      });
 
-  generosSeleccionado: SelectorMultipleDTO[]= [
-    { llave: 1 ,  valor : 'Drama'},
-  ] ;
+      this.generosNoSeleccionados = modelo.generosNoSeleccionados.map(genero => {
+        return <SelectorMultipleDTO>{llave: genero.id, valor: genero.nombre};
+      });
 
-  generosNoSeleccionado: SelectorMultipleDTO[]= [
- { llave: 2 ,  valor : 'Accion'},
-{ llave: 3 ,  valor : 'Comedia'}  ] ;
+      this.generosSeleccionados = modelo.generosSeleccionados.map(genero => {
+        return <SelectorMultipleDTO>{llave: genero.id, valor: genero.nombre};
+      });
+    });
+  }
 
+  @Input({ transform: numberAttribute })
+  id!: number;
 
+  pelicula!: PeliculaDTO;
+  generosSeleccionados!: SelectorMultipleDTO[];
+  generosNoSeleccionados!: SelectorMultipleDTO[];
+  cinesSeleccionados!: SelectorMultipleDTO[];
+  cinesNoSeleccionados!: SelectorMultipleDTO[];
+  actoresSeleccionados!: actorAutoCompleteDTO[];
 
+  peliculasService = inject(PeliculasService);
+  router = inject(Router);
+  errores: string[] = [];
 
+  guardarCambios(pelicula: PeliculaCreacionDTO){
+    this.peliculasService.actualizar(this.id, pelicula).subscribe({
+      next: () => {
+        this.router.navigate(['/']);
+      },
+      error: err => {
+        const errores = extraerErrores(err);
+        this.errores = errores;
+      }
+    })
+  }
 
-cineSeleccionado: SelectorMultipleDTO []= [
-  { llave: 2 ,  valor : 'Blue Mall'},
-] ;
-
-
-cineNoSeleccionado: SelectorMultipleDTO []= [
-{ llave: 1 ,  valor : 'Agora Mall'},
-{ llave: 3 ,  valor : 'Acro'}  ] ;
-
-actoresSeleccionados: actorAutocompleteDTO[]=
-[{
-  id: 1, nombre: 'tom hall', personaje: 'forrers gom' , foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Tom_Holland_at_KCA_2022.jpg/330px-Tom_Holland_at_KCA_2022.jpg'
- },]
-
-
-
-guardarCambios(pelicula: PeliculaCreacionDTO){
-  console.log('editado Pelicula', pelicula);
-}
 }
 

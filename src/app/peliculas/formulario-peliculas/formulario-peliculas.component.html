@@ -24,11 +24,11 @@
 
     <app-input-img  titulo="poster de la pelicula" [urlImagenActual]="modelo?.poster" (archivoSeleccionado)="archivoSeleccionado ($event)"></app-input-img>
      <h4>Seleccione los Generos</h4>
-    <app-selector-multiple [Seleccionado]="generosSeleccionado" [NoSeleccionado]="generosNoSeleccionado"></app-selector-multiple>
+    <app-selector-multiple [Seleccionado]="generosSeleccionados" [NoSeleccionado]="generosNoSeleccionados"></app-selector-multiple>
     
 
     <h4>Seleccione los cines</h4>
-    <app-selector-multiple [Seleccionado]="cinesSeleccionado" [NoSeleccionado]="cinesNoSeleccionado"></app-selector-multiple>
+    <app-selector-multiple [Seleccionado]="cinesSeleccionados" [NoSeleccionado]="cinesNoSeleccionados"></app-selector-multiple>
     
     <h4> Selecciones los Actores</h4>
     <app-autocomplete-actores  [actoresSeleccionados]="actoresSeleccionados"></app-autocomplete-actores>

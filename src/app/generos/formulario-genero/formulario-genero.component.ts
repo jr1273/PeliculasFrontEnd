@@ -42,7 +42,7 @@ obtenerErrorCampoNombre(): string{
   }
  return "";
 }
-GuardarCambios(){
+guardarCambios(){
 
   if(!this.form.valid){
     return;
